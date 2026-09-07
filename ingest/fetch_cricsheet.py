@@ -24,13 +24,22 @@ def fetch():
     # Stop with an error if the download failed (e.g. 404)
     response.raise_for_status()
 
-    # Open the downloaded bytes as a zip (in memory, no temp file) and unzip everything
+    # Open the downloaded bytes as a zip (in memory, no temp file)
     with zipfile.ZipFile(io.BytesIO(response.content)) as zf:
-        zf.extractall(RAW_DIR)
+        # Names of files already in the folder (so we can skip them)
+        existing = {f.name for f in RAW_DIR.iterdir()}
 
-    # Count the CSVs that came out, as a sanity check
+        # Files in the zip that we don't have yet
+        new_files = [name for name in zf.namelist() if name not in existing]
+
+        # Extract only those
+        zf.extractall(RAW_DIR, members=new_files)
+
+    print(f"Added {len(new_files)} new files")
+
+    # Count the CSVs now in the folder, as a sanity check
     files = list(RAW_DIR.glob("*.csv"))
-    print(f"Done. {len(files)} CSV files in {RAW_DIR}")
+    print(f"Total: {len(files)} CSV files in {RAW_DIR}")
 
 
 # Only run fetch() when this file is run directly, not when it's imported
