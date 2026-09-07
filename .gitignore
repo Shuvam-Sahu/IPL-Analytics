@@ -180,3 +180,5 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 *.duckdb
+raw_data/
+.DS_Store
