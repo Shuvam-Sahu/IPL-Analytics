@@ -182,3 +182,4 @@ cython_debug/
 *.duckdb
 raw_data/
 .DS_Store
+.env
