@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: ipl_analytics
+    schema: bronze
+    tables:
+      - name: deliveries_raw
+      - name: match_info_raw
