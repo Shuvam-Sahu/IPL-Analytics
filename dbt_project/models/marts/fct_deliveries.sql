@@ -40,7 +40,13 @@ SELECT
 
     CASE WHEN player_dismissed IS NOT NULL AND COALESCE(wicket_type, '') <> 'retired hurt'
          THEN 1 ELSE 0 END AS is_wicket,   -- a batter was out, retired hurt does not count
-    CASE WHEN wicket_type IN ('bowled', 'caught', 'caught and bowled', 'lbw', 'stumped', 'hit wicket')
-         THEN 1 ELSE 0 END AS is_bowler_wicket   -- wickets credited to the bowler
 
-FROM {{ ref('stg_deliveries') }}   -- read from the staging model
+    CASE WHEN wicket_type IN ('bowled', 'caught', 'caught and bowled', 'lbw', 'stumped', 'hit wicket')
+         THEN 1 ELSE 0 END AS is_bowler_wicket,   -- wickets credited to the bowler
+
+    bt.team_name AS batting_team_name,    -- clean franchise name of the batting team
+    bwt.team_name AS bowling_team_name    -- clean franchise name of the bowling team
+
+FROM {{ ref('stg_deliveries') }} d
+LEFT JOIN {{ ref('team_names') }} bt ON bt.raw_team = d.batting_team    -- match the raw batting name to the seed
+LEFT JOIN {{ ref('team_names') }} bwt ON bwt.raw_team = d.bowling_team  -- match the raw bowling name to the seed
