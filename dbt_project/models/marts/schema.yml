@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: dim_matches
+    columns:
+      - name: match_id
+        data_tests:
+          - unique
+          - not_null
+      - name: venue_name
+        data_tests:
+          - not_null
+      - name: team_1
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_teams')
+                field: team_name
+      - name: team_2
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_teams')
+                field: team_name
+      - name: match_result
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['win', 'tie', 'no result']
+      - name: toss_decision
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['bat', 'field']
+
+  - name: dim_teams
+    columns:
+      - name: team_name
+        data_tests:
+          - unique
+          - not_null
+
+  - name: dim_venues
+    columns:
+      - name: venue_name
+        data_tests:
+          - unique
+          - not_null
+
+  - name: fct_deliveries
+    columns:
+      - name: delivery_id
+        data_tests:
+          - unique
+          - not_null
+      - name: match_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_matches')
+                field: match_id
+
+  - name: fct_batting_innings
+    columns:
+      - name: batting_innings_id
+        data_tests:
+          - unique
+          - not_null
+      - name: match_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_matches')
+                field: match_id
+
+  - name: fct_bowling_innings
+    columns:
+      - name: bowling_innings_id
+        data_tests:
+          - unique
+          - not_null
+      - name: match_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_matches')
+                field: match_id
